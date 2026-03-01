@@ -6,11 +6,13 @@ import { Home, Search, Sparkles, Bookmark } from "lucide-react";
 
 export default function BottomNav() {
   const [showTip, setShowTip] = useState(false);
+  const [showDot, setShowDot] = useState(false);
 
   useEffect(() => {
-    // Show tooltip only once per session
-    const seen = sessionStorage.getItem("catalog-tip-seen");
-    if (!seen) {
+    const tipSeen = sessionStorage.getItem("catalog-tip-seen");
+    const dotSeen = sessionStorage.getItem("catalog-dot-seen");
+    if (!dotSeen) setShowDot(true);
+    if (!tipSeen) {
       const timer = setTimeout(() => setShowTip(true), 1500);
       return () => clearTimeout(timer);
     }
@@ -19,6 +21,12 @@ export default function BottomNav() {
   function dismissTip() {
     setShowTip(false);
     sessionStorage.setItem("catalog-tip-seen", "true");
+  }
+
+  function onSearchClick() {
+    dismissTip();
+    setShowDot(false);
+    sessionStorage.setItem("catalog-dot-seen", "true");
   }
 
   return (
@@ -70,11 +78,11 @@ export default function BottomNav() {
           </Link>
           <Link
             href="/catalog"
-            className={`p-2 transition-colors relative ${showTip ? "text-black" : "text-gray-400 hover:text-black"}`}
-            onClick={dismissTip}
+            className={`p-2 transition-colors relative ${showTip || showDot ? "text-black" : "text-gray-400 hover:text-black"}`}
+            onClick={onSearchClick}
           >
             <Search size={24} />
-            {showTip && (
+            {showDot && (
               <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full animate-pulse" />
             )}
           </Link>
